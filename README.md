@@ -1,14 +1,14 @@
-# Pipeline de Extracci√≥n de Entidades T√©cnicas con LCEL y Pydantic
+# Sistema de Recuperaci®Æn Sem®¢ntica Local (RAG) - TP 3
 
-Este proyecto implementa un pipeline as√≠ncrono y resiliente con **LangChain Expression Language (LCEL)** y **Pydantic** para la extracci√≥n estructurada de entidades t√©cnicas a partir de logs o descripciones de arquitectura.
+Este proyecto implementa un sistema **RAG (Retrieval-Augmented Generation)** as®™ncrono y persistente utilizando **LangChain**, **ChromaDB**, **Sentence-Transformers** y **Pydantic**.
 
-## üéØ Caracter√≠sticas
-* **Contratos con Pydantic**: Salida validada con campos `tecnologias`, `nivel_de_criticidad` y `resumen_tecnico`.
-* **Composici√≥n LCEL**: Uni√≥n modular con `prompt | model.with_structured_output(Schema)`.
-* **Resiliencia Autom√°tica**: Reintentos autom√°ticos mediante `.with_retry()`.
-* **Procesamiento As√≠ncrono**: Ejecuci√≥n con `.ainvoke()`.
+## ?? Caracter®™sticas
+* **Ingesta y Chunking**: Procesa archivos de `data/` usando `RecursiveCharacterTextSplitter` (500 tokens, 50 overlap) y genera embeddings con `all-MiniLM-L6-v2`.
+* **Persistencia Vectorial**: Almacena los vectores en `./vectorstore` evitando la reindexaci®Æn si la base ya existe.
+* **Filtro Anti-Alucinaci®Æn**: Prompt calibrado para responder estrictamente con el contexto y declarar falta de informaci®Æn ante consultas fuera de dominio.
+* **Salida Estructurada**: Formato validado con Pydantic (`RespuestaRAG`).
 
-## üõ†Ô∏è Instalaci√≥n y Uso
+## ??? Instalaci®Æn y Uso
 
 1. **Instalar dependencias**:
    ```bash

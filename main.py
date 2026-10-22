@@ -1,46 +1,42 @@
 import asyncio
 from dotenv import load_dotenv
-
-from chain import process_text
+from rag_chain import get_rag_response
 
 load_dotenv()
 
 
 async def main():
     print("========================================")
-    print("PROBANDO PIPELINE LCEL (TP 2)")
+    print("PROBANDO SISTEMA RAG LOCAL (TP 3)")
     print("========================================\n")
 
-    # 1. Caso Normal: Log técnico estructurado
-    texto_tecnico = """
-    Nuestra API en FastAPI está devolviendo timeouts intermitentes. El caché en Redis 
-    parece saturarse en picos de tráfico y las conexiones a PostgreSQL se agotan 
-    porque el pool está mal dimensionado. Esto está afectando a usuarios en producción.
-    """
-
-    print("--- 1. Caso Normal: Log Técnico ---")
+    # 1. Caso 1: Pregunta cuya respuesta SÍ está en los documentos
+    pregunta_valida = "¿Qué es ChromaDB y cómo funciona su persistencia local?"
+    print("--- 1. Prueba con Pregunta Válida ---")
+    print(f"Pregunta: {pregunta_valida}\n")
+    
     try:
-        resultado = await process_text(texto_tecnico)
-        print("\n✅ Resultado JSON Validado:")
-        print(resultado.model_dump_json(indent=2))
+        respuesta1 = await get_rag_response(pregunta_valida)
+        print("✅ Respuesta Validada:")
+        print(f"• Respuesta: {respuesta1.respuesta}")
+        print(f"• Fuentes:   {respuesta1.fuentes}\n")
     except Exception as e:
-        print(f"❌ Error en caso normal: {e}")
+        print(f"❌ Error en prueba 1: {e}\n")
 
-    print("\n" + "=" * 40 + "\n")
+    print("=" * 50 + "\n")
 
-    # 2. Prueba de Estrés: Texto ambiguo sin nombres explícitos de tecnologías
-    texto_ambiguo = """
-    El sistema anda medio lento últimamente. Parece que cuando entra mucha gente 
-    se cae la base de datos pero no estoy muy seguro de qué motor estamos usando en el servidor.
-    """
-
-    print("--- 2. Prueba de Estrés: Texto Ambiguo ---")
+    # 2. Caso 2: Pregunta Trampa (NO está en los documentos)
+    pregunta_trampa = "¿Cómo se despliega un cluster de Kubernetes en Google Cloud?"
+    print("--- 2. Prueba con Pregunta Trampa (Filtro Anti-Alucinación) ---")
+    print(f"Pregunta: {pregunta_trampa}\n")
+    
     try:
-        resultado_ambiguo = await process_text(texto_ambiguo)
-        print("\n✅ Resultado JSON Validado (Texto ambiguo):")
-        print(resultado_ambiguo.model_dump_json(indent=2))
+        respuesta2 = await get_rag_response(pregunta_trampa)
+        print("✅ Respuesta Validada:")
+        print(f"• Respuesta: {respuesta2.respuesta}")
+        print(f"• Fuentes:   {respuesta2.fuentes}\n")
     except Exception as e:
-        print(f"❌ Error en prueba de estrés: {e}")
+        print(f"❌ Error en prueba 2: {e}\n")
 
 
 if __name__ == "__main__":
